@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  users     User[]
+  flags     Flag[]
+  auditLogs AuditLog[]
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String?
+  provider    String
+  providerId  String
+  role        Role     @default(READONLY)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  READONLY
+}
+
+model Flag {
+  id             String    @id @default(uuid())
+  key            String
+  workspace      Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId    String
+  defaultValue   Boolean
+  isEnabled      Boolean
+  rulesJson      String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  @@unique([workspaceId, key])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  workspace  Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  flagKey    String?
+  action     String
+  actorId    String?
+  payload    Json?
+  createdAt  DateTime  @default(now())
+}
