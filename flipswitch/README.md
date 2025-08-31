@@ -1,6 +1,4 @@
-# FlipSwitch — feature flags (Full ready)
-
-## Quick start (Docker - recommended)
+# FlipSwitch
 
 1. Copy `.env.example` to `.env` and adjust values if needed.
 2. Start services with Docker Compose:
